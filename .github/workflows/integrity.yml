@@ -32,6 +32,9 @@ jobs:
         tools: composer:v${{ matrix.composer }}
         coverage: none
 
+    - run: composer config --global allow-plugins true
+      name: Allow all composer plugins
+
     - run: composer global require hirak/prestissimo
       name: Install composer plugin for parallel downloads
       if: ${{ startsWith(matrix.composer, '1') }}
