@@ -24,4 +24,19 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.matrix) }}
     steps:
-      - run: echo "1"
+    - uses: actions/checkout@v3
+    - name: Set PHP Version
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        tools: composer:v${{ matrix.composer }}
+        coverage: none
+    - run: composer create-project --repository-url="https://repo.magento.com/" "${{ matrix.magento }}" ${{ github.workspace }}/magento
+      shell: bash
+      env:
+        COMPOSER_AUTH: ${{ secrets.composer_auth }}
+      name: Create Magento ${{ matrix.magento }} Project
+    - run: composer create-project --repository-url="https://preview-mirror.mage-os.org/" "${{ matrix.magento }}" ${{ github.workspace }}/mageos
+      shell: bash
+      name: Create MageOS ${{ matrix.magento }} Project
+    - run: diff -rq -x "*composer*" -x "*autoload*" ${{ github.workspace }}/magento ${{ github.workspace }}/mageos
