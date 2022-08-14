@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.matrix) }}
+      fail-fast: false
     steps:
     - uses: actions/checkout@v3
     - name: Set PHP Version
