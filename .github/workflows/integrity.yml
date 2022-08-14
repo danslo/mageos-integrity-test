@@ -2,7 +2,9 @@ name: Integrity Test
 
 on:
   workflow_dispatch: {}
-        
+  push:
+    branches:
+    - main
   pull_request:
     branches:
     - main
@@ -67,7 +69,7 @@ jobs:
       shell: bash
       env:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
-      name: Create Magento ${{ matrix.magento }} Project
+      name: Create MageOS ${{ matrix.magento }} Project
 
     - run: composer require monolog/monolog:"<2.7.0" --no-update
       name: Fixup Monolog (https://github.com/magento/magento2/pull/35596)
@@ -87,5 +89,10 @@ jobs:
       env:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
 
-    # Integrity Check
+    # Integrity checks
+    - run: diff <(cd ${{ github.workspace }}/magento; composer show | sort | awk '{print $1 " " $2}') <(cd ${{ github.workspace }}/mageos; composer show | sort | awk '{print $1 " " $2}')
+      name: Version Integrity Check
+
     - run: diff -rq -x "*composer*" -x "*autoload*" ${{ github.workspace }}/magento ${{ github.workspace }}/mageos
+      if: always()
+      name: Files Integrity Check
