@@ -57,7 +57,9 @@ jobs:
       if: ${{ !startsWith(matrix.composer, '1') }}
 
     - run: composer install
-      working-directory: ${{ github.workspace }}/magento 
+      working-directory: ${{ github.workspace }}/magento
+      env:
+        COMPOSER_AUTH: ${{ secrets.composer_auth }}
 
     # MageOS
     - run: composer create-project --repository-url="https://preview-mirror.mage-os.org/" "${{ matrix.magento }}" ${{ github.workspace }}/mageos --no-install
@@ -80,7 +82,9 @@ jobs:
       if: ${{ !startsWith(matrix.composer, '1') }}
 
     - run: composer install
-      working-directory: ${{ github.workspace }}/mageos 
+      working-directory: ${{ github.workspace }}/mageos
+      env:
+        COMPOSER_AUTH: ${{ secrets.composer_auth }}
 
     # Integrity Check
     - run: diff -rq -x "*composer*" -x "*autoload*" ${{ github.workspace }}/magento ${{ github.workspace }}/mageos
