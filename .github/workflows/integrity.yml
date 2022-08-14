@@ -90,7 +90,7 @@ jobs:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
 
     # Integrity checks
-    - run: diff <(cd ${{ github.workspace }}/magento; composer show | sort | awk '{print $1 " " $2}') <(cd ${{ github.workspace }}/mageos; composer show | sort | awk '{print $1 " " $2}')
+    - run: diff <(composer show -d ${{ github.workspace }}/magento | sort) <(composer show -d ${{ github.workspace }}/mageos | sort)
       name: Version Integrity Check
 
     - run: diff -rq -x "*composer*" -x "*autoload*" ${{ github.workspace }}/magento ${{ github.workspace }}/mageos
