@@ -34,6 +34,7 @@ jobs:
 
     - run: composer config --global allow-plugins true
       name: Allow all composer plugins
+      if: ${{ startsWith(matrix.composer, '1') }}
 
     - run: composer global require hirak/prestissimo
       name: Install composer plugin for parallel downloads
