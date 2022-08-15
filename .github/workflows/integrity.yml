@@ -63,9 +63,6 @@ jobs:
       working-directory: ${{ github.workspace }}/magento
       env:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
-        
-    - run: ls -la .gitignore
-      working-directory: ${{ github.workspace }}/magento
 
     # MageOS
     - run: composer create-project --repository-url="https://preview-mirror.mage-os.org/" "${{ matrix.magento }}" ${{ github.workspace }}/mageos --no-install
