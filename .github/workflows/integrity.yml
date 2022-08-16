@@ -1,13 +1,26 @@
 name: Integrity Test
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repository'
+        required: true
+        default: 'https://preview-mirror.mage-os.org/'
+        type: choice
+        options:
+        - https://preview-mirror.mage-os.org/
+        - https://mirror.mage-os.org/
+        - https://mage-os.rubic.nl/
   push:
     branches:
     - main
   pull_request:
     branches:
     - main
+
+env:
+  repo: ${{ inputs.repo && inputs.repo || 'https://preview-mirror.mage-os.org/' }}
 
 jobs:
   compute-matrix:
@@ -65,7 +78,7 @@ jobs:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
 
     # MageOS
-    - run: composer create-project --repository-url="https://preview-mirror.mage-os.org/" "${{ matrix.magento }}" ${{ github.workspace }}/mageos --no-install
+    - run: composer create-project --repository-url="${{ env.repo }}" "${{ matrix.magento }}" ${{ github.workspace }}/mageos --no-install
       shell: bash
       env:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
