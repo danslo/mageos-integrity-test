@@ -30,38 +30,42 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set PHP Version
+    - name: Set PHP version
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php-version }}
         tools: composer:v${{ inputs.composer-version }}
         coverage: none
 
-    - run: composer global require hirak/prestissimo
-      name: Install composer plugin for parallel downloads
+    - name: Install composer plugin for parallel downloads
+      run: composer global require hirak/prestissimo
+      shell: bash
       if: ${{ startsWith(inputs.composer-version, '1') }}
 
-    - run: composer create-project --repository-url="${{ inputs.repository-url }}" "${{ inputs.magento-version }}" ${{ inputs.install-directory }} --no-install
+    - name: Create ${{ inputs.magento-version }} project
+      run: composer create-project --repository-url="${{ inputs.repository-url }}" "${{ inputs.magento-version }}" ${{ inputs.install-directory }} --no-install
       shell: bash
       env:
         COMPOSER_AUTH: ${{ inputs.composer-auth }}
-      name: Create MageOS ${{ inputs.magento-version }} Project
 
-    - run: composer require monolog/monolog:"<2.7.0" --no-update
-      name: Fixup Monolog (https://github.com/magento/magento2/pull/35596)
+    - name: Fixup monolog (https://github.com/magento/magento2/pull/35596)
+      run: composer require monolog/monolog:"<2.7.0" --no-update
+      shell: bash
       working-directory: ${{ inputs.install-directory }}
       if: ${{ endsWith(inputs.magento-version, '2.4.4') }}
 
-    - run: |
+    - name: Fixup composer plugins 
+      run: |
         composer config --no-interaction allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
         composer config --no-interaction allow-plugins.laminas/laminas-dependency-plugin true
         composer config --no-interaction allow-plugins.magento/* true
-      name: Fixup Composer Plugins
+      shell: bash
       working-directory: ${{ inputs.install-directory }}
       if: ${{ !startsWith(inputs.composer-version, '1') }}
 
-    - name: Install MageOS Version
+    - name: Install dependencies
       run: composer install
+      shell: bash
       working-directory: ${{ inputs.install-directory }}
       env:
         COMPOSER_AUTH: ${{ inputs.composer-auth }}
