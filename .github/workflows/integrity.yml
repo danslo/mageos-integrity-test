@@ -41,7 +41,8 @@ jobs:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.matrix) }}
       fail-fast: false
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
     - name: Set PHP Version
       uses: shivammathur/setup-php@v2
       with:
@@ -73,7 +74,8 @@ jobs:
       working-directory: ${{ github.workspace }}/mageos
       if: ${{ !startsWith(matrix.composer, '1') }}
 
-    - run: composer install
+    - name: Install MageOS Version
+      run: composer install
       working-directory: ${{ github.workspace }}/mageos
       env:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
@@ -98,7 +100,8 @@ jobs:
       working-directory: ${{ github.workspace }}/magento
       if: ${{ !startsWith(matrix.composer, '1') }}
 
-    - run: composer install
+    - name: Install Adobe Commerce Version
+      run: composer install
       working-directory: ${{ github.workspace }}/magento
       env:
         COMPOSER_AUTH: ${{ secrets.composer_auth }}
